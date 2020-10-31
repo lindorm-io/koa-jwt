@@ -1,13 +1,11 @@
-import { Context } from "koa";
 import { JWKSHandler } from "../class";
 import { KeyPair } from "@lindorm-io/key-pair";
 import { Logger } from "@lindorm-io/winston";
-import { TFunction, TObject, TPromise } from "@lindorm-io/global";
+import { TFunction, TPromise } from "@lindorm-io/core";
+import { IKoaAppContext } from "@lindorm-io/koa";
 
-export interface IJWKSContext extends Context {
+export interface IJWKSContext extends IKoaAppContext {
   keys: Array<KeyPair>;
-  logger: Logger;
-  metrics: TObject<number>;
 }
 
 export interface IJWKSMiddlewareOptions {

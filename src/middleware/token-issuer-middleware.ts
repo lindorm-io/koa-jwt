@@ -1,17 +1,14 @@
-import { Context } from "koa";
+import { IKoaAppContext } from "@lindorm-io/koa";
 import { KeyPair, Keystore } from "@lindorm-io/key-pair";
-import { Logger } from "@lindorm-io/winston";
-import { TObject, TPromise } from "@lindorm-io/global";
+import { TPromise } from "@lindorm-io/core";
 import { TokenIssuer } from "@lindorm-io/jwt";
 import { isArray } from "lodash";
 
-export interface ITokenIssuerContext extends Context {
+export interface ITokenIssuerContext extends IKoaAppContext {
   issuers: {
     tokenIssuer: TokenIssuer;
   };
   keys: Array<KeyPair>;
-  logger: Logger;
-  metrics: TObject<number>;
 }
 
 export interface ITokenIssuerMiddlewareOptions {

@@ -1,15 +1,11 @@
-import { APIError, HttpStatus, TObject, TPromise } from "@lindorm-io/global";
-import { Context } from "koa";
+import { APIError, HttpStatus, TObject, TPromise, getAuthorizationHeader } from "@lindorm-io/core";
+import { IKoaAppContext } from "@lindorm-io/koa";
 import { IVerifyData, sanitiseToken, TokenIssuer } from "@lindorm-io/jwt";
-import { Logger } from "@lindorm-io/winston";
-import { getAuthorizationHeader } from "@lindorm-io/common";
 
-export interface IBearerTokenContext extends Context {
+export interface IBearerTokenContext extends IKoaAppContext {
   issuers: {
     tokenIssuer: TokenIssuer;
   };
-  logger: Logger;
-  metrics: TObject<number>;
   tokens: TObject<IVerifyData>;
 }
 
