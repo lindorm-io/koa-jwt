@@ -40,9 +40,10 @@ export class JWKSHandler {
           new KeyPair({
             id: key.kid,
             algorithm: key.alg,
+            created: new Date(key.c),
+            expires: key.exp ? new Date(key.exp) : null,
             publicKey: key.n,
             type: key.kty,
-            created: new Date(key.c),
           }),
         );
       }
