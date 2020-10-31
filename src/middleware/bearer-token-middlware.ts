@@ -3,10 +3,10 @@ import { IKoaAppContext } from "@lindorm-io/koa";
 import { IVerifyData, sanitiseToken, TokenIssuer } from "@lindorm-io/jwt";
 
 export interface IBearerTokenContext extends IKoaAppContext {
-  issuers: {
+  issuer: {
     tokenIssuer: TokenIssuer;
   };
-  tokens: TObject<IVerifyData>;
+  token: TObject<IVerifyData>;
 }
 
 export interface IBearerTokenMiddlewareOptions {
@@ -33,13 +33,15 @@ export const bearerTokenMiddleware = (options: IBearerTokenMiddlewareOptions) =>
 
   ctx.logger.debug("Bearer Token Auth identified", { token: sanitiseToken(token) });
 
-  ctx.tokens = {
-    ...(ctx.tokens || {}),
-    bearer: ctx.issuers.tokenIssuer.verify({
-      audience: options.audience,
-      issuer: options.issuer,
-      token,
-    }),
+  const verified = ctx.issuer.tokenIssuer.verify({
+    audience: options.audience,
+    issuer: options.issuer,
+    token,
+  });
+
+  ctx.token = {
+    ...(ctx.token || {}),
+    bearer: verified,
   };
 
   ctx.metrics = {

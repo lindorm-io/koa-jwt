@@ -1,11 +1,11 @@
 import { JWKSHandler } from "../class";
-import { KeyPair } from "@lindorm-io/key-pair";
+import { Keystore } from "@lindorm-io/key-pair";
 import { Logger } from "@lindorm-io/winston";
 import { TFunction, TPromise } from "@lindorm-io/core";
 import { IKoaAppContext } from "@lindorm-io/koa";
 
 export interface IJWKSContext extends IKoaAppContext {
-  keys: Array<KeyPair>;
+  keystore: Keystore;
 }
 
 export interface IJWKSMiddlewareOptions {
@@ -20,12 +20,14 @@ export const jwksMiddleware = (options: IJWKSMiddlewareOptions): TFunction<Promi
   return async (ctx: IJWKSContext, next: TPromise<void>): Promise<void> => {
     const start = Date.now();
 
-    ctx.keys = await handler.getKeys();
+    const keys = await handler.getKeys();
+    ctx.keystore = new Keystore({ keys });
+
+    ctx.logger.debug("keystore initialised", { keys });
     ctx.metrics = {
       ...(ctx.metrics || {}),
-      keys: Date.now() - start,
+      keystore: Date.now() - start,
     };
-    ctx.logger.debug("keys initialized", { keys: ctx.keys });
 
     await next();
   };

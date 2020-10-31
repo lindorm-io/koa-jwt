@@ -1,14 +1,13 @@
 import { IKoaAppContext } from "@lindorm-io/koa";
-import { KeyPair, Keystore } from "@lindorm-io/key-pair";
+import { Keystore } from "@lindorm-io/key-pair";
 import { TPromise } from "@lindorm-io/core";
 import { TokenIssuer } from "@lindorm-io/jwt";
-import { isArray } from "lodash";
 
 export interface ITokenIssuerContext extends IKoaAppContext {
-  issuers: {
+  issuer: {
     tokenIssuer: TokenIssuer;
   };
-  keys: Array<KeyPair>;
+  keystore: Keystore;
 }
 
 export interface ITokenIssuerMiddlewareOptions {
@@ -21,21 +20,24 @@ export const tokenIssuerMiddleware = (options: ITokenIssuerMiddlewareOptions) =>
 ): Promise<void> => {
   const start = Date.now();
 
-  if (!isArray(ctx.keys)) {
-    throw new Error("Keys could not be found on context");
+  if (!ctx.keystore) {
+    throw new Error("Keystore could not be found on context");
   }
 
-  ctx.issuers = {
-    ...(ctx.issuers || {}),
+  if (ctx.keystore.getLength() === 0) {
+    throw new Error("Keystore was initialised without keys");
+  }
+
+  ctx.issuer = {
+    ...(ctx.issuer || {}),
     tokenIssuer: new TokenIssuer({
       issuer: options.issuer,
-      keystore: new Keystore({ keys: ctx.keys }),
+      keystore: ctx.keystore,
       logger: ctx.logger,
     }),
   };
 
-  ctx.logger.debug("token issuer initialized");
-
+  ctx.logger.debug("token issuer initialised", { issuer: options.issuer });
   ctx.metrics = {
     ...(ctx.metrics || {}),
     tokenIssuer: Date.now() - start,

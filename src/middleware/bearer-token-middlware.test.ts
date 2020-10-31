@@ -24,7 +24,7 @@ const EC_PUBLIC_KEY =
 const ecKey = new KeyPair({
   id: uuid(),
   created: new Date("2020-01-01 08:00:00.000"),
-  expired: null,
+  expires: null,
   algorithm: "ES512",
   type: "ec",
   privateKey: EC_PRIVATE_KEY,
@@ -70,9 +70,9 @@ describe("bearer-token-middlware.ts", () => {
       logger: {
         debug: jest.fn(),
       },
-      issuers: { tokenIssuer },
+      issuer: { tokenIssuer },
       metrics: {},
-      tokens: {},
+      token: {},
     };
     next = () => Promise.resolve();
   });
@@ -82,7 +82,7 @@ describe("bearer-token-middlware.ts", () => {
 
     await expect(bearerTokenMiddleware(options)(ctx, next)).resolves.toBe(undefined);
 
-    expect(ctx.tokens.bearer).toStrictEqual(
+    expect(ctx.token.bearer).toStrictEqual(
       expect.objectContaining({
         id,
         level: 0,
