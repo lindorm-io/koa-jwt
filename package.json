@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "concurrently 'rimraf coverage' 'rimraf dist'",
-    "coverage": "jest --coverage",
+    "coverage": "jest --coverage --forceExit",
     "lint": "eslint --ext .ts ./src/",
     "lint:fix": "eslint --ext .ts ./src/ --fix",
     "postversion": "git push --no-verify && git push --tags --no-verify",
@@ -28,7 +28,7 @@
     "publish:patch": "npm version patch && npm publish",
     "publish:minor": "npm version minor && npm publish",
     "publish:major": "npm version major && npm publish",
-    "test": "jest --config jest.config.js",
+    "test": "jest --config jest.config.js --forceExit",
     "test:clear": "jest --clearCache",
     "test:watch": "jest --config jest.config.js --watch --",
     "typecheck": "tsc -p tsconfig.json --noEmit",
