@@ -20,6 +20,8 @@ export const bearerTokenMiddleware = (options: IBearerTokenMiddlewareOptions) =>
 ): Promise<void> => {
   const start = Date.now();
 
+  const { logger } = ctx;
+
   const authorization = getAuthorizationHeader(ctx.get("Authorization"));
 
   if (authorization.type !== "Bearer") {
@@ -31,7 +33,7 @@ export const bearerTokenMiddleware = (options: IBearerTokenMiddlewareOptions) =>
 
   const token = authorization.value;
 
-  ctx.logger.debug("Bearer Token Auth identified", { token: sanitiseToken(token) });
+  logger.debug("Bearer Token Auth identified", { token: sanitiseToken(token) });
 
   const verified = ctx.issuer.tokenIssuer.verify({
     audience: options.audience,

@@ -20,11 +20,13 @@ export const tokenIssuerMiddleware = (options: ITokenIssuerMiddlewareOptions) =>
 ): Promise<void> => {
   const start = Date.now();
 
+  const { logger } = ctx;
+
   if (!ctx.keystore) {
     throw new Error("Keystore could not be found on context");
   }
 
-  if (ctx.keystore.getLength() === 0) {
+  if (ctx.keystore.getUsableKeys().length === 0) {
     throw new Error("Keystore was initialised without keys");
   }
 
@@ -37,7 +39,8 @@ export const tokenIssuerMiddleware = (options: ITokenIssuerMiddlewareOptions) =>
     }),
   };
 
-  ctx.logger.debug("token issuer initialised", { issuer: options.issuer });
+  logger.debug("token issuer initialised", { issuer: options.issuer });
+
   ctx.metrics = {
     ...(ctx.metrics || {}),
     tokenIssuer: Date.now() - start,
