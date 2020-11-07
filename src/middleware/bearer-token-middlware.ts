@@ -1,12 +1,12 @@
 import { APIError, HttpStatus, TObject, TPromise, getAuthorizationHeader } from "@lindorm-io/core";
 import { IKoaAppContext } from "@lindorm-io/koa";
-import { IVerifyData, sanitiseToken, TokenIssuer } from "@lindorm-io/jwt";
+import { ITokenIssuerVerifyData, TokenIssuer, sanitiseToken } from "@lindorm-io/jwt";
 
 export interface IBearerTokenContext extends IKoaAppContext {
   issuer: {
     tokenIssuer: TokenIssuer;
   };
-  token: TObject<IVerifyData>;
+  token: TObject<ITokenIssuerVerifyData>;
 }
 
 export interface IBearerTokenMiddlewareOptions {
