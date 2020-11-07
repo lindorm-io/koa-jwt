@@ -42,11 +42,11 @@
     "axios": "^0.21.0"
   },
   "peerDependencies": {
-    "@lindorm-io/jwt": ">=0.0.4",
-    "@lindorm-io/koa": ">=0.0.4"
+    "@lindorm-io/jwt": ">=0.0.6",
+    "@lindorm-io/koa": ">=0.0.6"
   },
   "devDependencies": {
-    "@lindorm-io/jwt": "^0.0.5",
+    "@lindorm-io/jwt": "^0.0.6",
     "@lindorm-io/koa": "^0.0.6",
     "@types/jest": "^26.0.15",
     "@types/jsonwebtoken": "^8.5.0",
