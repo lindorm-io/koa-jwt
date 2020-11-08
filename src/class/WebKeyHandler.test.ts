@@ -1,5 +1,5 @@
-import { JWKSHandler } from "./JWKSHandler";
-import { JWKSHandlerError } from "../error";
+import { WebKeyHandler } from "./WebKeyHandler";
+import { WebKeyHandlerError } from "../error";
 
 let keys: Array<any> = [];
 
@@ -10,7 +10,7 @@ jest.mock("axios", () => ({
 }));
 
 describe("JWKSHandler.ts", () => {
-  let handler: JWKSHandler;
+  let handler: WebKeyHandler;
 
   beforeEach(() => {
     keys = [
@@ -23,7 +23,7 @@ describe("JWKSHandler.ts", () => {
       },
     ];
 
-    handler = new JWKSHandler({
+    handler = new WebKeyHandler({
       host: "http://localhost",
       path: "/path",
       logger: {
@@ -51,6 +51,6 @@ describe("JWKSHandler.ts", () => {
   test("should throw error if there are no keys", async () => {
     keys = [];
 
-    await expect(handler.getKeys()).rejects.toStrictEqual(expect.any(JWKSHandlerError));
+    await expect(handler.getKeys()).rejects.toStrictEqual(expect.any(WebKeyHandlerError));
   });
 });

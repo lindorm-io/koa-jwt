@@ -1,4 +1,4 @@
-import { JWKSHandler } from "../class";
+import { WebKeyHandler } from "../class";
 import { Keystore } from "@lindorm-io/key-pair";
 import { Logger } from "@lindorm-io/winston";
 import { TFunction, TPromise } from "@lindorm-io/core";
@@ -15,7 +15,7 @@ export interface IJWKSMiddlewareOptions {
 }
 
 export const jwksMiddleware = (options: IJWKSMiddlewareOptions): TFunction<Promise<void>> => {
-  const handler = new JWKSHandler(options);
+  const handler = new WebKeyHandler(options);
 
   return async (ctx: IJWKSContext, next: TPromise<void>): Promise<void> => {
     const start = Date.now();

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { JWKSHandlerError } from "../error";
+import { WebKeyHandlerError } from "../error";
 import { KeyPair } from "@lindorm-io/key-pair";
 import { Logger } from "@lindorm-io/winston";
 import { URL } from "url";
@@ -10,7 +10,7 @@ export interface IJWKSHandlerOptions {
   path: string;
 }
 
-export class JWKSHandler {
+export class WebKeyHandler {
   private logger: Logger;
   private url: URL;
 
@@ -55,7 +55,7 @@ export class JWKSHandler {
 
       return array;
     } catch (err) {
-      throw new JWKSHandlerError(err, url);
+      throw new WebKeyHandlerError(err, url);
     }
   }
 }

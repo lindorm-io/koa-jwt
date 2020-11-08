@@ -1,1 +1,1 @@
-export * from "./JWKSHandler";
+export * from "./WebKeyHandler";
