@@ -141,4 +141,24 @@ describe("bearer-token-middlware.ts", () => {
 
     await expect(bearerTokenMiddleware(options)(ctx, next)).rejects.toThrow();
   });
+
+  test("should throw error on locked permission", async () => {
+    const { token: newToken } = tokenIssuer.sign({
+      audience: "mock-audience",
+      permission: Permission.LOCKED,
+      expiry: "99 seconds",
+      subject: "mock-subject",
+    });
+
+    ctx = {
+      ...ctx,
+      get: jest.fn(() => `Bearer ${newToken}`),
+    };
+
+    await expect(bearerTokenMiddleware(options)(ctx, next)).rejects.toStrictEqual(
+      expect.objectContaining({
+        message: "Invalid Bearer Token",
+      }),
+    );
+  });
 });

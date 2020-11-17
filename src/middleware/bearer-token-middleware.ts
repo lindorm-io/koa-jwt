@@ -45,6 +45,17 @@ export const bearerTokenMiddleware = (options: IBearerTokenMiddlewareOptions) =>
     token,
   });
 
+  if (verified.permission && verified.permission === Permission.LOCKED) {
+    throw new APIError("Invalid Bearer Token", {
+      details: "Subject is locked",
+      publicData: {
+        subject: verified.subject,
+        permission: verified.permission,
+      },
+      statusCode: HttpStatus.ClientError.FORBIDDEN,
+    });
+  }
+
   ctx.token = {
     ...(ctx.token || {}),
     bearer: verified,
