@@ -1,7 +1,8 @@
 import { KeyPair, Keystore } from "@lindorm-io/key-pair";
-import { TokenIssuer } from "@lindorm-io/jwt";
-import { bearerTokenMiddleware } from "./bearer-token-middlware";
+import { InvalidTokenClientError, InvalidTokenDeviceError, TokenIssuer } from "@lindorm-io/jwt";
+import { bearerTokenMiddleware } from "./bearer-token-middleware";
 import { v4 as uuid } from "uuid";
+import { Permission } from "@lindorm-io/jwt/dist/enum";
 
 const EC_PRIVATE_KEY =
   "-----BEGIN PRIVATE KEY-----\n" +
@@ -51,6 +52,8 @@ const tokenIssuer = new TokenIssuer({
 
 const { id, token } = tokenIssuer.sign({
   audience: "mock-audience",
+  clientId: "clientId",
+  deviceId: "deviceId",
   expiry: "99 seconds",
   subject: "mock-subject",
   payload: { test: true },
@@ -67,10 +70,15 @@ describe("bearer-token-middlware.ts", () => {
       issuer: "mock-issuer",
     };
     ctx = {
+      get: jest.fn(() => `Bearer ${token}`),
       logger: {
         debug: jest.fn(),
       },
       issuer: { tokenIssuer },
+      metadata: {
+        clientId: "clientId",
+        deviceId: "deviceId",
+      },
       metrics: {},
       token: {},
     };
@@ -78,8 +86,6 @@ describe("bearer-token-middlware.ts", () => {
   });
 
   test("should successfully validate bearer token auth", async () => {
-    ctx.get = jest.fn(() => `Bearer ${token}`);
-
     await expect(bearerTokenMiddleware(options)(ctx, next)).resolves.toBe(undefined);
 
     expect(ctx.token.bearer).toStrictEqual(
@@ -90,6 +96,24 @@ describe("bearer-token-middlware.ts", () => {
         subject: "mock-subject",
       }),
     );
+  });
+
+  test("should successfully validate when metadata is missing", async () => {
+    ctx.metadata = {};
+
+    await expect(bearerTokenMiddleware(options)(ctx, next)).resolves.toBe(undefined);
+  });
+
+  test("should throw error on wrong client metadata", async () => {
+    ctx.metadata.clientId = "wrong";
+
+    await expect(bearerTokenMiddleware(options)(ctx, next)).rejects.toStrictEqual(expect.any(InvalidTokenClientError));
+  });
+
+  test("should throw error on wrong device metadata", async () => {
+    ctx.metadata.deviceId = "wrong";
+
+    await expect(bearerTokenMiddleware(options)(ctx, next)).rejects.toStrictEqual(expect.any(InvalidTokenDeviceError));
   });
 
   test("should throw error on missing authorization header", async () => {

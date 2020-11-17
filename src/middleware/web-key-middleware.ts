@@ -14,7 +14,7 @@ export interface IJWKSMiddlewareOptions {
   path: string;
 }
 
-export const jwksMiddleware = (options: IJWKSMiddlewareOptions): TFunction<Promise<void>> => {
+export const webKeyMiddleware = (options: IJWKSMiddlewareOptions): TFunction<Promise<void>> => {
   const handler = new WebKeyHandler(options);
 
   return async (ctx: IJWKSContext, next: TPromise<void>): Promise<void> => {

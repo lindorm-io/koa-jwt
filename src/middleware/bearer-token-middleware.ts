@@ -1,6 +1,7 @@
 import { APIError, HttpStatus, TObject, TPromise, getAuthorizationHeader } from "@lindorm-io/core";
 import { IKoaAppContext } from "@lindorm-io/koa";
 import { ITokenIssuerVerifyData, TokenIssuer, sanitiseToken } from "@lindorm-io/jwt";
+import { Permission } from "@lindorm-io/jwt/dist/enum";
 
 export interface IBearerTokenContext extends IKoaAppContext {
   issuer: {
@@ -20,13 +21,14 @@ export const bearerTokenMiddleware = (options: IBearerTokenMiddlewareOptions) =>
 ): Promise<void> => {
   const start = Date.now();
 
-  const { logger } = ctx;
+  const { logger, metadata } = ctx;
 
   const authorization = getAuthorizationHeader(ctx.get("Authorization"));
 
   if (authorization.type !== "Bearer") {
     throw new APIError("Invalid Authorization Header", {
       details: "Expected header to be: Bearer",
+      publicData: { header: authorization.type },
       statusCode: HttpStatus.ClientError.BAD_REQUEST,
     });
   }
@@ -37,6 +39,8 @@ export const bearerTokenMiddleware = (options: IBearerTokenMiddlewareOptions) =>
 
   const verified = ctx.issuer.tokenIssuer.verify({
     audience: options.audience,
+    clientId: metadata.clientId,
+    deviceId: metadata.deviceId,
     issuer: options.issuer,
     token,
   });
