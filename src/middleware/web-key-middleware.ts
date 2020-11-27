@@ -9,14 +9,14 @@ export interface IKoaWebKeyContext extends IKoaAppContext {
   keystore: Keystore;
 }
 
-export interface IJWKSMiddlewareOptions {
+export interface IWebKeyMiddlewareOptions {
   host: string;
-  logger: Logger;
   path: string;
-  inMemoryKeys?: Keystore;
+  logger: Logger;
+  inMemoryKeys?: Array<KeyPair>;
 }
 
-export const webKeyMiddleware = (options: IJWKSMiddlewareOptions): TFunction<Promise<void>> => {
+export const webKeyMiddleware = (options: IWebKeyMiddlewareOptions): TFunction<Promise<void>> => {
   const handler = new WebKeyHandler(options);
   const { inMemoryKeys } = options;
 
