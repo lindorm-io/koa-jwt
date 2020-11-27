@@ -1,10 +1,11 @@
-import { WebKeyHandler } from "../class";
-import { Keystore } from "@lindorm-io/key-pair";
+import { IKoaAppContext } from "@lindorm-io/koa";
+import { KeyPair, Keystore } from "@lindorm-io/key-pair";
 import { Logger } from "@lindorm-io/winston";
 import { TFunction, TPromise } from "@lindorm-io/core";
-import { IKoaAppContext } from "@lindorm-io/koa";
+import { WebKeyHandler } from "../class";
+import { isArray } from "lodash";
 
-export interface IJWKSContext extends IKoaAppContext {
+export interface IKoaWebKeyContext extends IKoaAppContext {
   keystore: Keystore;
 }
 
@@ -12,17 +13,25 @@ export interface IJWKSMiddlewareOptions {
   host: string;
   logger: Logger;
   path: string;
+  inMemoryKeys?: Keystore;
 }
 
 export const webKeyMiddleware = (options: IJWKSMiddlewareOptions): TFunction<Promise<void>> => {
   const handler = new WebKeyHandler(options);
+  const { inMemoryKeys } = options;
 
-  return async (ctx: IJWKSContext, next: TPromise<void>): Promise<void> => {
+  return async (ctx: IKoaWebKeyContext, next: TPromise<void>): Promise<void> => {
     const start = Date.now();
 
     const { logger } = ctx;
 
-    const keys = await handler.getKeys();
+    let keys: Array<KeyPair> = [];
+
+    if (isArray(inMemoryKeys)) {
+      keys = inMemoryKeys;
+    } else {
+      keys = await handler.getKeys();
+    }
 
     ctx.keystore = new Keystore({ keys });
 

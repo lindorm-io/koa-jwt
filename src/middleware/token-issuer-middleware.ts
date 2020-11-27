@@ -3,7 +3,7 @@ import { Keystore } from "@lindorm-io/key-pair";
 import { TPromise } from "@lindorm-io/core";
 import { TokenIssuer } from "@lindorm-io/jwt";
 
-export interface ITokenIssuerContext extends IKoaAppContext {
+export interface IKoaTokenIssuerContext extends IKoaAppContext {
   issuer: {
     tokenIssuer: TokenIssuer;
   };
@@ -15,7 +15,7 @@ export interface ITokenIssuerMiddlewareOptions {
 }
 
 export const tokenIssuerMiddleware = (options: ITokenIssuerMiddlewareOptions) => async (
-  ctx: ITokenIssuerContext,
+  ctx: IKoaTokenIssuerContext,
   next: TPromise<void>,
 ): Promise<void> => {
   const start = Date.now();

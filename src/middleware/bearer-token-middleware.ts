@@ -3,7 +3,7 @@ import { IKoaAppContext } from "@lindorm-io/koa";
 import { ITokenIssuerVerifyData, TokenIssuer, sanitiseToken } from "@lindorm-io/jwt";
 import { Permission } from "@lindorm-io/jwt/dist/enum";
 
-export interface IBearerTokenContext extends IKoaAppContext {
+export interface IKoaBearerTokenContext extends IKoaAppContext {
   issuer: {
     tokenIssuer: TokenIssuer;
   };
@@ -16,7 +16,7 @@ export interface IBearerTokenMiddlewareOptions {
 }
 
 export const bearerTokenMiddleware = (options: IBearerTokenMiddlewareOptions) => async (
-  ctx: IBearerTokenContext,
+  ctx: IKoaBearerTokenContext,
   next: TPromise<void>,
 ): Promise<void> => {
   const start = Date.now();
