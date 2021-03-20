@@ -16,6 +16,13 @@ export interface IWebKeyMiddlewareOptions {
   inMemoryKeys?: Array<KeyPair>;
 }
 
+const getKeys = async (handler: WebKeyHandler, inMemoryKeys?: Array<KeyPair>): Promise<Array<KeyPair>> => {
+  if (isArray(inMemoryKeys)) {
+    return inMemoryKeys;
+  }
+  return await handler.getKeys();
+};
+
 export const webKeyMiddleware = (options: IWebKeyMiddlewareOptions): TFunction<Promise<void>> => {
   const handler = new WebKeyHandler(options);
   const { inMemoryKeys } = options;
@@ -25,13 +32,7 @@ export const webKeyMiddleware = (options: IWebKeyMiddlewareOptions): TFunction<P
 
     const { logger } = ctx;
 
-    let keys: Array<KeyPair> = [];
-
-    if (isArray(inMemoryKeys)) {
-      keys = inMemoryKeys;
-    } else {
-      keys = await handler.getKeys();
-    }
+    const keys = await getKeys(handler, inMemoryKeys);
 
     ctx.keystore = new Keystore({ keys });
 

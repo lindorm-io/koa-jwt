@@ -1,13 +1,13 @@
 import axios from "axios";
-import { WebKeyHandlerError } from "../error";
 import { KeyPair } from "@lindorm-io/key-pair";
 import { Logger } from "@lindorm-io/winston";
 import { URL } from "url";
+import { WebKeyHandlerError } from "../error";
+import { WellKnown } from "../enum";
 
 export interface IJWKSHandlerOptions {
   host: string;
   logger: Logger;
-  path: string;
 }
 
 export class WebKeyHandler {
@@ -16,7 +16,7 @@ export class WebKeyHandler {
 
   constructor(options: IJWKSHandlerOptions) {
     this.logger = options.logger.createChildLogger(["jwks", "handler"]);
-    this.url = new URL(options.path, options.host);
+    this.url = new URL(WellKnown.WEB_KEYS, options.host);
   }
 
   public async getKeys(): Promise<Array<KeyPair>> {
