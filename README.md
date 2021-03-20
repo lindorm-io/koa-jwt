@@ -18,7 +18,6 @@ This package has the following peer dependencies:
 koaApp.addMiddleware(jwksMiddleware({
   host: "https://authentication.service/",
   logger: winstonLogger,
-  path: "/.well-known/jwks.json",
 }));
 ```
 
