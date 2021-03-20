@@ -39,6 +39,7 @@ const logger = {
   verbose: jest.fn(),
   debug: jest.fn(),
   silly: jest.fn(),
+  createChildLogger: () => logger,
 };
 
 const keystore = new Keystore({ keys: [ecKey] });

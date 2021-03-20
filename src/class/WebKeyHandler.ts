@@ -5,7 +5,7 @@ import { URL } from "url";
 import { WebKeyHandlerError } from "../error";
 import { WellKnown } from "../enum";
 
-export interface IJWKSHandlerOptions {
+export interface IWebKeyHandlerOptions {
   host: string;
   logger: Logger;
 }
@@ -14,8 +14,8 @@ export class WebKeyHandler {
   private logger: Logger;
   private url: URL;
 
-  constructor(options: IJWKSHandlerOptions) {
-    this.logger = options.logger.createChildLogger(["jwks", "handler"]);
+  constructor(options: IWebKeyHandlerOptions) {
+    this.logger = options.logger.createChildLogger(["WebKeyHandler"]);
     this.url = new URL(WellKnown.WEB_KEYS, options.host);
   }
 

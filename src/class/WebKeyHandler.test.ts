@@ -25,7 +25,6 @@ describe("JWKSHandler.ts", () => {
 
     handler = new WebKeyHandler({
       host: "http://localhost",
-      path: "/path",
       logger: {
         // @ts-ignore
         createChildLogger: jest.fn(() => ({

@@ -13,11 +13,10 @@ This package has the following peer dependencies:
 
 ## Usage
 
-### JWKS Middleware
+### Web Key Middleware
 ```typescript
-koaApp.addMiddleware(jwksMiddleware({
+koaApp.addMiddleware(webKeyMiddleware({
   host: "https://authentication.service/",
-  logger: winstonLogger,
 }));
 ```
 
