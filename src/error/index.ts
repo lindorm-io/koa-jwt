@@ -1,1 +1,2 @@
-export * from "./WebKeyHandlerError";
+export * from "./EmptyKeystoreError";
+export * from "./InvalidKeystoreError";

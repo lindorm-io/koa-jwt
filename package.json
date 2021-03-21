@@ -36,10 +36,7 @@
     "validate": "npm run test:clear && npm run lint && npm run typecheck && npm run test"
   },
   "dependencies": {
-    "@lindorm-io/core": "0.1.8",
-    "@lindorm-io/key-pair": "^0.1.2",
-    "@lindorm-io/winston": "^0.1.2",
-    "axios": "^0.21.1"
+    "@lindorm-io/core": "0.1.8"
   },
   "peerDependencies": {
     "@lindorm-io/jwt": ">=0.1.5",
@@ -47,7 +44,9 @@
   },
   "devDependencies": {
     "@lindorm-io/jwt": "^0.1.5",
+    "@lindorm-io/key-pair": "^0.1.2",
     "@lindorm-io/koa": "^0.1.5",
+    "@lindorm-io/winston": "^0.1.2",
     "@types/jest": "^26.0.21",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/koa": "^2.13.1",

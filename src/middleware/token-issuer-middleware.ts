@@ -2,12 +2,15 @@ import { IKoaAppContext } from "@lindorm-io/koa";
 import { Keystore } from "@lindorm-io/key-pair";
 import { TPromise } from "@lindorm-io/core";
 import { TokenIssuer } from "@lindorm-io/jwt";
+import { EmptyKeystoreError, InvalidKeystoreError } from "../error";
+import { Logger } from "@lindorm-io/winston";
 
 export interface IKoaTokenIssuerContext extends IKoaAppContext {
   issuer: {
     tokenIssuer: TokenIssuer;
   };
   keystore: Keystore;
+  logger: Logger;
 }
 
 export interface ITokenIssuerMiddlewareOptions {
@@ -23,11 +26,11 @@ export const tokenIssuerMiddleware = (options: ITokenIssuerMiddlewareOptions) =>
   const { logger } = ctx;
 
   if (!ctx.keystore) {
-    throw new Error("Keystore could not be found on context");
+    throw new InvalidKeystoreError();
   }
 
   if (ctx.keystore.getUsableKeys().length === 0) {
-    throw new Error("Keystore was initialised without keys");
+    throw new EmptyKeystoreError();
   }
 
   ctx.issuer = {

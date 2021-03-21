@@ -13,24 +13,9 @@ This package has the following peer dependencies:
 
 ## Usage
 
-### Web Key Middleware
-```typescript
-koaApp.addMiddleware(webKeyMiddleware({
-  host: "https://authentication.service/",
-}));
-```
-
 ### Token Issuer Middleware
 ```typescript
 koaApp.addMiddleware(tokenIssuerMiddleware({
-  issuer: "https://authentication.service/",
-}));
-```
-
-### Bearer Token Middleware
-```typescript
-koaApp.addMiddleware(bearerTokenMiddleware({
-  audience: "access",
   issuer: "https://authentication.service/",
 }));
 ```
