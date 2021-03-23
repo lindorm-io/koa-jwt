@@ -1,25 +1,10 @@
-import { IKoaAppContext } from "@lindorm-io/koa";
-import { Keystore } from "@lindorm-io/key-pair";
-import { TPromise } from "@lindorm-io/core";
 import { TokenIssuer } from "@lindorm-io/jwt";
 import { EmptyKeystoreError, InvalidKeystoreError } from "../error";
-import { Logger } from "@lindorm-io/winston";
-
-export interface IKoaTokenIssuerContext extends IKoaAppContext {
-  issuer: {
-    tokenIssuer: TokenIssuer;
-  };
-  keystore: Keystore;
-  logger: Logger;
-}
-
-export interface ITokenIssuerMiddlewareOptions {
-  issuer: string;
-}
+import { IKoaTokenIssuerContext, ITokenIssuerMiddlewareOptions, TNext } from "../types";
 
 export const tokenIssuerMiddleware = (options: ITokenIssuerMiddlewareOptions) => async (
   ctx: IKoaTokenIssuerContext,
-  next: TPromise<void>,
+  next: TNext,
 ): Promise<void> => {
   const start = Date.now();
 
