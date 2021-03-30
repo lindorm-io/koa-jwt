@@ -18,6 +18,8 @@ This package has the following peer dependencies:
 ### Token Issuer Middleware
 ```typescript
 koaApp.addMiddleware(tokenIssuerMiddleware({
-  issuer: "https://authentication.service/",
+  issuer: "https://authentication.service/", // used for token validation
+  issuerName: "auth", // used to store issuer on context
+  keystoreName: "auth", // used to find the keystore on context
 }));
 ```
