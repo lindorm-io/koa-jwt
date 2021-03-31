@@ -1,5 +1,5 @@
 # @lindorm-io/koa-jwt
-JWT and JWKS middleware for @lindorm-io/koa applications.
+Token issuer middleware for @lindorm-io/koa applications.
 
 ## Installation
 ```shell script
