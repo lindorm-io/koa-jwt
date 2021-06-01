@@ -4,7 +4,7 @@ import { Keystore } from "@lindorm-io/key-pair";
 import { getTestKeystore, logger } from "../test";
 import { tokenIssuerMiddleware } from "./token-issuer-middleware";
 
-MockDate.set("2020-01-01 08:00:00.000");
+MockDate.set("2020-01-01T08:00:00.000Z");
 
 const next = jest.fn();
 
@@ -17,6 +17,7 @@ describe("tokenIssuerMiddleware", () => {
       keystore: {
         keystoreName: getTestKeystore(),
       },
+      metrics: {},
       logger,
     };
     options = {
@@ -27,7 +28,7 @@ describe("tokenIssuerMiddleware", () => {
   });
 
   test("should set issuer on context", async () => {
-    await expect(tokenIssuerMiddleware(options)(ctx, next)).resolves.toBe(undefined);
+    await expect(tokenIssuerMiddleware(options)(ctx, next)).resolves.toBeUndefined();
     expect(ctx.issuer).toMatchSnapshot();
   });
 
