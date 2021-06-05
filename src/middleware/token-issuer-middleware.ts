@@ -14,23 +14,20 @@ export const tokenIssuerMiddleware =
   async (ctx, next): Promise<void> => {
     const start = Date.now();
 
-    if (!ctx.keystore || !ctx.keystore[options.keystoreName]) {
+    if (!ctx.keystore[options.keystoreName]) {
       throw new InvalidKeystoreError();
     }
     if (ctx.keystore[options.keystoreName].getUsableKeys().length === 0) {
       throw new EmptyKeystoreError();
     }
 
-    ctx.issuer = {
-      ...(ctx.issuer || {}),
-      [options.issuerName]: new TokenIssuer({
-        issuer: options.issuer,
-        keystore: ctx.keystore[options.keystoreName],
-        logger: ctx.logger,
-      }),
-    };
+    ctx.jwt[options.issuerName] = new TokenIssuer({
+      issuer: options.issuer,
+      keystore: ctx.keystore[options.keystoreName],
+      logger: ctx.logger,
+    });
 
-    ctx.metrics.tokenIssuer = Date.now() - start;
+    ctx.metrics.jwt = (ctx.metrics.jwt || 0) + (Date.now() - start);
 
     await next();
   };
