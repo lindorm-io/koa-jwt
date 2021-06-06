@@ -10,7 +10,7 @@ interface Options {
 export const tokenIssuerMiddleware =
   (options: Options): Middleware<TokenIssuerContext> =>
   async (ctx, next): Promise<void> => {
-    const start = Date.now();
+    const metric = ctx.getMetric("jwt");
 
     if (!ctx.keystore) {
       throw new InvalidKeystoreError();
@@ -25,7 +25,7 @@ export const tokenIssuerMiddleware =
       logger: ctx.logger,
     });
 
-    ctx.metrics.jwt = (ctx.metrics.jwt || 0) + (Date.now() - start);
+    metric.end();
 
     await next();
   };
