@@ -5,8 +5,6 @@ import { TokenIssuerContext } from "../types";
 
 interface Options {
   issuer: string;
-  issuerName: string;
-  keystoreName: string;
 }
 
 export const tokenIssuerMiddleware =
@@ -14,16 +12,16 @@ export const tokenIssuerMiddleware =
   async (ctx, next): Promise<void> => {
     const start = Date.now();
 
-    if (!ctx.keystore[options.keystoreName]) {
+    if (!ctx.keystore) {
       throw new InvalidKeystoreError();
     }
-    if (ctx.keystore[options.keystoreName].getUsableKeys().length === 0) {
+    if (ctx.keystore.getKeys().length === 0) {
       throw new EmptyKeystoreError();
     }
 
-    ctx.jwt[options.issuerName] = new TokenIssuer({
+    ctx.jwt = new TokenIssuer({
       issuer: options.issuer,
-      keystore: ctx.keystore[options.keystoreName],
+      keystore: ctx.keystore,
       logger: ctx.logger,
     });
 
