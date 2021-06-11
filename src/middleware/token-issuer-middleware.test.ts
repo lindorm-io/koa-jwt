@@ -1,29 +1,30 @@
 import MockDate from "mockdate";
-import { EmptyKeystoreError, InvalidKeystoreError } from "../error";
 import { Algorithm, KeyPair, Keystore, KeyType, NamedCurve } from "@lindorm-io/key-pair";
 import { getTestKeystore, logger } from "../test";
 import { tokenIssuerMiddleware } from "./token-issuer-middleware";
 import { TokenIssuer } from "@lindorm-io/jwt";
 import { Metric } from "@lindorm-io/koa";
+import { ServerError } from "@lindorm-io/errors";
 
 MockDate.set("2020-01-01T08:00:00.000Z");
 
-const next = jest.fn();
+const next = () => Promise.resolve();
 
 describe("tokenIssuerMiddleware", () => {
   let ctx: any;
   let options: any;
 
   beforeEach(() => {
+    options = {
+      issuer: "issuer",
+    };
+
     ctx = {
       keystore: getTestKeystore(),
       metrics: {},
       logger,
     };
     ctx.getMetric = (key: string) => new Metric(ctx, key);
-    options = {
-      issuer: "issuer",
-    };
   });
 
   test("should set issuer on context", async () => {
@@ -36,7 +37,7 @@ describe("tokenIssuerMiddleware", () => {
   test("should throw InvalidKeystoreError", async () => {
     ctx.keystore = undefined;
 
-    await expect(tokenIssuerMiddleware(options)(ctx, next)).rejects.toStrictEqual(expect.any(InvalidKeystoreError));
+    await expect(tokenIssuerMiddleware(options)(ctx, next)).rejects.toThrow(ServerError);
   });
 
   test("should throw EmptyKeystoreError", async () => {
@@ -54,6 +55,6 @@ describe("tokenIssuerMiddleware", () => {
       ],
     });
 
-    await expect(tokenIssuerMiddleware(options)(ctx, next)).rejects.toStrictEqual(expect.any(EmptyKeystoreError));
+    await expect(tokenIssuerMiddleware(options)(ctx, next)).rejects.toThrow(ServerError);
   });
 });
