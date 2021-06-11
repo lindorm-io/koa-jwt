@@ -19,7 +19,16 @@ This package has the following peer dependencies:
 ```typescript
 koaApp.addMiddleware(tokenIssuerMiddleware({
   issuer: "https://authentication.service/", // used for token validation
-  issuerName: "auth", // used to store issuer on context
-  keystoreName: "auth", // used to find the keystore on context
+}));
+```
+
+### Token Validation Middleware
+```typescript
+koaApp.addMiddleware(tokenValidationMiddleware({
+  audience: "multi_factor",
+  issuer: "https://authentication.service/", // used for token validation
+  key: "tokenKey", // used to set validated token on context (ctx.token.tokenKey)
+  path: "tokenPath", // used to find token on request body (ctx.request.body.tokenPath)
+  optional: false, // used if token is not necessary, but optional
 }));
 ```
