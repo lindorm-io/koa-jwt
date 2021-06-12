@@ -6,7 +6,7 @@ import { TokenIssuer } from "@lindorm-io/jwt";
 import { Metric } from "@lindorm-io/koa";
 import { ServerError } from "@lindorm-io/errors";
 
-MockDate.set("2020-01-01T08:00:00.000Z");
+MockDate.set("2021-01-01T08:00:00.000Z");
 
 const next = () => Promise.resolve();
 
