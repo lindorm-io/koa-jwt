@@ -24,7 +24,7 @@ describe("tokenValidationMiddleware", () => {
       audience: "audience",
       issuer: "issuer",
       key: "tokenKey",
-      path: "tokenPath",
+      path: "request.body.tokenPath",
       optional: false,
     };
 

@@ -17,7 +17,7 @@ export const tokenValidationMiddleware =
   async (ctx, next): Promise<void> => {
     const metric = ctx.getMetric("token");
 
-    const token = get(ctx.request.body, path);
+    const token = get(ctx, path);
 
     if (!isString(token) && optional) {
       ctx.logger.debug("Optional token not found", {

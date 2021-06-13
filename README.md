@@ -28,7 +28,7 @@ koaApp.addMiddleware(tokenValidationMiddleware({
   audience: "multi_factor",
   issuer: "https://authentication.service/", // used for token validation
   key: "tokenKey", // used to set validated token on context (ctx.token.tokenKey)
-  path: "tokenPath", // used to find token on request body (ctx.request.body.tokenPath)
+  path: "request.body.tokenPath", // used to find token on request body (ctx.request.body.tokenPath)
   optional: false, // used if token is not necessary, but optional
 }));
 ```
