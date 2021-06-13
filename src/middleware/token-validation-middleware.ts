@@ -9,11 +9,11 @@ interface Options {
   issuer: string;
   key: string;
   path: string;
-  optional: boolean;
+  optional?: boolean;
 }
 
 export const tokenValidationMiddleware =
-  ({ audience, issuer, key, path, optional = false }: Options): Middleware<TokenIssuerContext> =>
+  ({ audience, issuer, key, path, optional }: Options): Middleware<TokenIssuerContext> =>
   async (ctx, next): Promise<void> => {
     const metric = ctx.getMetric("token");
 
@@ -28,6 +28,13 @@ export const tokenValidationMiddleware =
       metric.end();
 
       return await next();
+    }
+    if (!isString(token)) {
+      throw new ClientError("Invalid token", {
+        debug: { path, token },
+        description: `${key} is expected`,
+        statusCode: ClientError.StatusCode.BAD_REQUEST,
+      });
     }
 
     try {
@@ -44,11 +51,6 @@ export const tokenValidationMiddleware =
       });
     } catch (err) {
       metric.end();
-
-      ctx.logger.debug("Token not found on path", {
-        [key]: token,
-        path,
-      });
 
       throw new ClientError("Invalid token", {
         error: err,
