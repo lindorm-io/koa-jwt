@@ -8,12 +8,12 @@ interface Options {
   audience: string;
   issuer: string;
   key: string;
-  path: string;
   optional?: boolean;
 }
 
 export const tokenValidationMiddleware =
-  ({ audience, issuer, key, path, optional }: Options): Middleware<TokenIssuerContext> =>
+  ({ audience, issuer, key, optional }: Options) =>
+  (path: string): Middleware<TokenIssuerContext> =>
   async (ctx, next): Promise<void> => {
     const metric = ctx.getMetric("token");
 

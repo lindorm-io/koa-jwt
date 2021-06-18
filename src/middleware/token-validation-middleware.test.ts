@@ -10,6 +10,7 @@ const next = () => Promise.resolve();
 
 describe("tokenValidationMiddleware", () => {
   let options: any;
+  let path: string;
   let ctx: any;
 
   beforeEach(() => {
@@ -24,9 +25,9 @@ describe("tokenValidationMiddleware", () => {
       audience: "audience",
       issuer: "issuer",
       key: "tokenKey",
-      path: "request.body.tokenPath",
       optional: false,
     };
+    path = "request.body.tokenPath";
 
     ctx = {
       jwt,
@@ -44,7 +45,7 @@ describe("tokenValidationMiddleware", () => {
   });
 
   test("should validate token on path", async () => {
-    await expect(tokenValidationMiddleware(options)(ctx, next)).resolves.toBeUndefined();
+    await expect(tokenValidationMiddleware(options)(path)(ctx, next)).resolves.toBeUndefined();
 
     expect(ctx.token.tokenKey).toStrictEqual(
       expect.objectContaining({
@@ -59,7 +60,7 @@ describe("tokenValidationMiddleware", () => {
     options.optional = true;
     ctx.request.body.tokenPath = undefined;
 
-    await expect(tokenValidationMiddleware(options)(ctx, next)).resolves.toBeUndefined();
+    await expect(tokenValidationMiddleware(options)(path)(ctx, next)).resolves.toBeUndefined();
 
     expect(ctx.token.tokenKey).toBeUndefined();
   });
@@ -67,6 +68,6 @@ describe("tokenValidationMiddleware", () => {
   test("should throw when token is not on path", async () => {
     ctx.request.body.tokenPath = undefined;
 
-    await expect(tokenValidationMiddleware(options)(ctx, next)).rejects.toThrow(ClientError);
+    await expect(tokenValidationMiddleware(options)(path)(ctx, next)).rejects.toThrow(ClientError);
   });
 });
