@@ -3,6 +3,7 @@ import { Middleware } from "@lindorm-io/koa";
 import { TokenIssuerContext } from "../types";
 import { get, isString } from "lodash";
 import { sanitiseToken } from "@lindorm-io/jwt";
+import { includes } from "lodash";
 
 interface Options {
   audience: string;
@@ -13,7 +14,7 @@ interface Options {
 
 export const tokenValidationMiddleware =
   ({ audience, issuer, key, optional }: Options) =>
-  (path: string): Middleware<TokenIssuerContext> =>
+  (path: string, requiredScope?: Array<string>): Middleware<TokenIssuerContext> =>
   async (ctx, next): Promise<void> => {
     const metric = ctx.getMetric("token");
 
@@ -56,6 +57,22 @@ export const tokenValidationMiddleware =
         error: err,
         debug: { audience, issuer, key, path },
         description: `${key} is invalid`,
+      });
+    }
+
+    if (!requiredScope?.length) {
+      metric.end();
+      return await next();
+    }
+
+    for (const scope of requiredScope) {
+      if (includes(ctx.token[key].scope, scope)) continue;
+
+      throw new ClientError("Scope conflict", {
+        data: { scope },
+        debug: { expect: requiredScope, actual: ctx.token[key].scope },
+        description: "Expected scope not found on bearer token",
+        statusCode: ClientError.StatusCode.CONFLICT,
       });
     }
 

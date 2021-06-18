@@ -18,6 +18,7 @@ describe("tokenValidationMiddleware", () => {
     const { token } = jwt.sign({
       audience: "audience",
       expiry: "99 seconds",
+      scope: ["default", "edit"],
       subject: "subject",
     });
 
@@ -65,9 +66,27 @@ describe("tokenValidationMiddleware", () => {
     expect(ctx.token.tokenKey).toBeUndefined();
   });
 
+  test("should validate token scope", async () => {
+    await expect(tokenValidationMiddleware(options)(path, ["default", "edit"])(ctx, next)).resolves.toBeUndefined();
+
+    expect(ctx.token.tokenKey).toStrictEqual(
+      expect.objectContaining({
+        subject: "subject",
+        token: expect.any(String),
+      }),
+    );
+    expect(ctx.metrics.token).toStrictEqual(expect.any(Number));
+  });
+
   test("should throw when token is not on path", async () => {
     ctx.request.body.tokenPath = undefined;
 
     await expect(tokenValidationMiddleware(options)(path)(ctx, next)).rejects.toThrow(ClientError);
+  });
+
+  test("should throw when scope is invalid", async () => {
+    await expect(tokenValidationMiddleware(options)(path, ["default", "edit", "openid"])(ctx, next)).rejects.toThrow(
+      ClientError,
+    );
   });
 });
