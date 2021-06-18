@@ -70,8 +70,11 @@ export const tokenValidationMiddleware =
 
       throw new ClientError("Scope conflict", {
         data: { scope },
-        debug: { expect: requiredScope, actual: ctx.token[key].scope },
-        description: "Expected scope not found on bearer token",
+        debug: {
+          expect: requiredScope,
+          actual: ctx.token[key].scope,
+        },
+        description: `Expected scope not found on ${key}`,
         statusCode: ClientError.StatusCode.CONFLICT,
       });
     }
