@@ -1,22 +1,32 @@
 import { ClientError } from "@lindorm-io/errors";
 import { Middleware } from "@lindorm-io/koa";
+import { TokenIssuer } from "@lindorm-io/jwt";
 import { TokenIssuerContext } from "../types";
 import { get, isString } from "lodash";
-import { sanitiseToken } from "@lindorm-io/jwt";
-import { includes } from "lodash";
 
-interface Options {
-  audience: string;
+interface MiddlewareOptions {
+  audience?: string | Array<string>;
   issuer: string;
   key: string;
+  type: string;
+}
+
+interface Options {
+  maxAge?: string;
+  nonce?: string;
   optional?: boolean;
+  scope?: Array<string>;
+  subject?: string;
 }
 
 export const tokenValidationMiddleware =
-  ({ audience, issuer, key, optional }: Options) =>
-  (path: string, requiredScope?: Array<string>): Middleware<TokenIssuerContext> =>
+  (middlewareOptions: MiddlewareOptions) =>
+  (path: string, options: Options = {}): Middleware<TokenIssuerContext> =>
   async (ctx, next): Promise<void> => {
     const metric = ctx.getMetric("token");
+
+    const { audience, issuer, key, type } = middlewareOptions;
+    const { maxAge, nonce, optional, scope, subject } = options;
 
     const token = get(ctx, path);
 
@@ -30,7 +40,10 @@ export const tokenValidationMiddleware =
 
       return await next();
     }
+
     if (!isString(token)) {
+      metric.end();
+
       throw new ClientError("Invalid token", {
         debug: { path, token },
         description: `${key} is expected`,
@@ -39,43 +52,28 @@ export const tokenValidationMiddleware =
     }
 
     try {
-      ctx.token[key] = ctx.jwt.verify({
-        audience: audience,
-        clientId: ctx.metadata.clientId,
-        deviceId: ctx.metadata.deviceId,
-        issuer: issuer,
-        token,
+      ctx.token[key] = ctx.jwt.verify(token, {
+        audience,
+        clientId: ctx.metadata.clientId ? ctx.metadata.clientId : undefined,
+        deviceId: ctx.metadata.deviceId ? ctx.metadata.deviceId : undefined,
+        issuer,
+        maxAge,
+        nonce,
+        scope,
+        subject,
+        type,
       });
 
       ctx.logger.debug("Token validated", {
-        [key]: sanitiseToken(token),
+        [key]: TokenIssuer.sanitiseToken(token),
       });
     } catch (err) {
       metric.end();
 
-      throw new ClientError("Invalid token", {
+      throw new ClientError(err.message || "Invalid token", {
         error: err,
-        debug: { audience, issuer, key, path },
+        debug: { middlewareOptions, options },
         description: `${key} is invalid`,
-      });
-    }
-
-    if (!requiredScope?.length) {
-      metric.end();
-      return await next();
-    }
-
-    for (const scope of requiredScope) {
-      if (includes(ctx.token[key].scope, scope)) continue;
-
-      throw new ClientError("Scope conflict", {
-        data: { scope },
-        debug: {
-          expect: requiredScope,
-          actual: ctx.token[key].scope,
-        },
-        description: `Expected scope not found on ${key}`,
-        statusCode: ClientError.StatusCode.CONFLICT,
       });
     }
 
