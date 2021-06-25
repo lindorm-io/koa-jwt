@@ -2,31 +2,33 @@ import { ClientError } from "@lindorm-io/errors";
 import { Middleware } from "@lindorm-io/koa";
 import { TokenIssuer } from "@lindorm-io/jwt";
 import { TokenIssuerContext } from "../types";
+import { camelCase } from "@lindorm-io/core";
 import { get, isString } from "lodash";
 
 interface MiddlewareOptions {
-  audience?: string | Array<string>;
+  audience?: string;
   issuer: string;
-  key: string;
+  key?: string;
+  maxAge?: string;
   type: string;
 }
 
-interface Options {
-  maxAge?: string;
+export interface TokenValidationOptions {
   nonce?: string;
   optional?: boolean;
-  scope?: Array<string>;
+  scope?: string;
   subject?: string;
 }
 
 export const tokenValidationMiddleware =
   (middlewareOptions: MiddlewareOptions) =>
-  (path: string, options: Options = {}): Middleware<TokenIssuerContext> =>
+  (path: string, options: TokenValidationOptions = {}): Middleware<TokenIssuerContext> =>
   async (ctx, next): Promise<void> => {
     const metric = ctx.getMetric("token");
 
-    const { audience, issuer, key, type } = middlewareOptions;
-    const { maxAge, nonce, optional, scope, subject } = options;
+    const { audience, issuer, maxAge, type } = middlewareOptions;
+    const { nonce, optional, scope, subject } = options;
+    const key = middlewareOptions.key || `${camelCase(type)}Token`;
 
     const token = get(ctx, path);
 
@@ -58,9 +60,9 @@ export const tokenValidationMiddleware =
         deviceId: ctx.metadata.deviceId ? ctx.metadata.deviceId : undefined,
         issuer,
         maxAge,
-        nonce,
-        scope,
-        subject,
+        nonce: nonce ? get(ctx, nonce) : undefined,
+        scope: scope ? get(ctx, scope) : undefined,
+        subject: subject ? get(ctx, subject) : undefined,
         type,
       });
 

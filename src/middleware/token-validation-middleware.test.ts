@@ -31,14 +31,14 @@ describe("tokenValidationMiddleware", () => {
       audience: "audience",
       issuer: "issuer",
       key: "tokenKey",
+      maxAge: "90 minutes",
       type: "type",
     };
     options = {
-      maxAge: "90 minutes",
-      nonce: "6142a95bc7004df59e365e37516170a9",
+      nonce: "request.body.nonce",
       optional: false,
-      scope: ["default"],
-      subject: "subject",
+      scope: "request.body.scope",
+      subject: "request.body.subject",
     };
     path = "request.body.tokenPath";
 
@@ -53,6 +53,9 @@ describe("tokenValidationMiddleware", () => {
       request: {
         body: {
           tokenPath: token,
+          nonce: "6142a95bc7004df59e365e37516170a9",
+          scope: ["default"],
+          subject: "subject",
         },
       },
       token: {},

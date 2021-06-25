@@ -24,11 +24,21 @@ koaApp.addMiddleware(tokenIssuerMiddleware({
 
 ### Token Validation Middleware
 ```typescript
-koaApp.addMiddleware(tokenValidationMiddleware({
-  audience: "multi_factor",
-  issuer: "https://authentication.service/", // used for token validation
-  key: "tokenKey", // used to set validated token on context (ctx.token.tokenKey)
-  path: "request.body.tokenPath", // used to find token on request body (ctx.request.body.tokenPath)
-  optional: false, // used if token is not necessary, but optional
-}));
+const middleware = tokenValidationMiddleware({
+  audience: "https://authentication.client", // OPTIONAL | string | used in JWT validation
+  issuer: "https://authentication.service/", // REQURIED | uri | used for token validation
+  key: "tokenKey", // OPTIONAL | string | used to set validated token on context (ctx.token.tokenKey)
+  maxAge: "10 minutes", // OPTIONAL | string | used in JWT validation
+  type: false, // REQUIRED | string | token type
+})
+
+router.use(middleware(
+  "request.body.tokenName", // REQUIRED | path | used to find token 
+  {
+    nonce: "entity.authorizationSession.nonce", // OPTIONAL | path | used in JWT validation
+    optional: false, // OPTIONAL | boolean | determines if middleware should throw when token is missing
+    scope: "entity.refreshSession.scope", // OPTIONAL | string | used in JWT validation
+    subject: "entity.refreshSession.accountId", // OPTIONAL | path | used in JWT validation
+  }
+));
 ```
