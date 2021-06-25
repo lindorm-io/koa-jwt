@@ -29,7 +29,7 @@ const middleware = tokenValidationMiddleware({
   issuer: "https://authentication.service/", // REQURIED | uri | used for token validation
   key: "tokenKey", // OPTIONAL | string | used to set validated token on context (ctx.token.tokenKey)
   maxAge: "10 minutes", // OPTIONAL | string | used in JWT validation
-  type: false, // REQUIRED | string | token type
+  type: "access", // REQUIRED | string | token type
 })
 
 router.use(middleware(
