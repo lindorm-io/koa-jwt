@@ -6,7 +6,6 @@ import { camelCase } from "@lindorm-io/core";
 import { get, isString } from "lodash";
 
 interface MiddlewareOptions {
-  audience?: string;
   issuer: string;
   key?: string;
   maxAge?: string;
@@ -16,7 +15,7 @@ interface MiddlewareOptions {
 export interface TokenValidationOptions {
   nonce?: string;
   optional?: boolean;
-  scope?: string;
+  scopes?: string;
   subject?: string;
 }
 
@@ -26,9 +25,9 @@ export const tokenValidationMiddleware =
   async (ctx, next): Promise<void> => {
     const metric = ctx.getMetric("token");
 
-    const { audience, issuer, maxAge, type } = middlewareOptions;
-    const { nonce, optional, scope, subject } = options;
-    const key = middlewareOptions.key || `${camelCase(type)}Token`;
+    const { issuer, maxAge, type } = middlewareOptions;
+    const { nonce, optional, scopes, subject } = options;
+    const key = middlewareOptions.key || camelCase(type);
 
     const token = get(ctx, path);
 
@@ -55,13 +54,11 @@ export const tokenValidationMiddleware =
 
     try {
       ctx.token[key] = ctx.jwt.verify(token, {
-        audience,
-        clientId: ctx.metadata.clientId ? ctx.metadata.clientId : undefined,
-        deviceId: ctx.metadata.deviceId ? ctx.metadata.deviceId : undefined,
+        audience: ctx.metadata.clientId ? [ctx.metadata.clientId] : undefined,
         issuer,
         maxAge,
         nonce: nonce ? get(ctx, nonce) : undefined,
-        scope: scope ? get(ctx, scope) : undefined,
+        scopes: scopes ? get(ctx, scopes) : undefined,
         subject: subject ? get(ctx, subject) : undefined,
         type,
       });

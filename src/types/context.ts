@@ -5,5 +5,5 @@ import { Keystore } from "@lindorm-io/key-pair";
 export interface TokenIssuerContext extends KoaContext {
   jwt: TokenIssuer;
   keystore: Keystore;
-  token: Record<string, IssuerVerifyData<unknown>>;
+  token: Record<string, IssuerVerifyData<unknown, unknown>>;
 }

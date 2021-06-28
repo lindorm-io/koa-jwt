@@ -17,18 +17,15 @@ describe("tokenValidationMiddleware", () => {
   beforeEach(() => {
     const jwt = getTestJwt();
     const { token } = jwt.sign({
-      audience: ["audience"],
-      clientId: "45270e26-3d10-4827-9b79-10cbd9d426bc",
-      deviceId: "7f3e4205-df61-4d3c-ad09-9998355bcd60",
+      audience: ["45270e26-3d10-4827-9b79-10cbd9d426bc"],
       expiry: "99 seconds",
       nonce: "6142a95bc7004df59e365e37516170a9",
-      scope: ["default", "edit"],
-      subject: "subject",
+      scopes: ["default", "edit"],
+      subject: "c57ed8ee-0797-44dd-921b-3db030879ec6",
       type: "type",
     });
 
     middlewareOptions = {
-      audience: "audience",
       issuer: "issuer",
       key: "tokenKey",
       maxAge: "90 minutes",
@@ -37,29 +34,29 @@ describe("tokenValidationMiddleware", () => {
     options = {
       nonce: "request.body.nonce",
       optional: false,
-      scope: "request.body.scope",
+      scopes: "request.body.scopes",
       subject: "request.body.subject",
     };
     path = "request.body.tokenPath";
 
     ctx = {
       jwt,
+      logger,
       metadata: {
         clientId: "45270e26-3d10-4827-9b79-10cbd9d426bc",
-        deviceId: "7f3e4205-df61-4d3c-ad09-9998355bcd60",
       },
       metrics: {},
-      logger,
       request: {
         body: {
           tokenPath: token,
           nonce: "6142a95bc7004df59e365e37516170a9",
-          scope: ["default"],
-          subject: "subject",
+          scopes: ["default"],
+          subject: "c57ed8ee-0797-44dd-921b-3db030879ec6",
         },
       },
       token: {},
     };
+
     ctx.getMetric = (key: string) => new Metric(ctx, key);
   });
 
@@ -68,7 +65,7 @@ describe("tokenValidationMiddleware", () => {
 
     expect(ctx.token.tokenKey).toStrictEqual(
       expect.objectContaining({
-        subject: "subject",
+        subject: "c57ed8ee-0797-44dd-921b-3db030879ec6",
         token: expect.any(String),
       }),
     );
