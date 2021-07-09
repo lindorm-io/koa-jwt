@@ -1,7 +1,7 @@
 {
   "name": "@lindorm-io/koa-jwt",
   "description": "Token issuer middleware for @lindorm-io/koa applications",
-  "version": "0.3.15",
+  "version": "0.3.16",
   "license": "ISC",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
